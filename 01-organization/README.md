@@ -1,124 +1,53 @@
 # 01 - Azure Organization
 
-This section documents the organization and governance of the Azure environment used for this portfolio project.
+This is the organization part of my Azure Cloud Portfolio project.
 
-## Objectives
+The goal is to learn how to organize Azure resources, manage access and protect resources from accidental changes.
 
-* Understand Azure resource organization
-* Define a clear resource group structure
-* Apply naming conventions
-* Understand Azure RBAC
-* Apply the principle of least privilege
-* Implement basic cost management and tagging
+## 1. Resource Groups
 
-## Azure Resource Structure
+I created three resource groups to organize the resources in my Azure environment.
 
-The Azure environment is organized into dedicated resource groups based on the main technical areas of the project:
+| Resource Group | Purpose                                         |
+| -------------- | ----------------------------------------------- |
+| `rg-network`   | Network resources                               |
+| `rg-compute`   | Compute resources, including my virtual machine |
+| `rg-security`  | Security resources                              |
 
-```text
-Azure Cloud Portfolio
-│
-├── rg-network
-│   └── Networking resources
-│
-├── rg-compute
-│   └── Compute resources
-│
-└── rg-security
-    └── Security resources
-```
+Azure resource groups help organize related resources and make it easier to manage them.
 
-A dedicated resource group for monitoring will be added as part of the monitoring phase of the project.
+## 2. Resource Tags
 
-This structure separates resources by responsibility and makes the environment easier to manage, secure and troubleshoot.
+I applied the same tags to my resource groups and individual resources to keep my Azure environment organized.
 
-## Resource Groups
+| Tag           | Value                   | Purpose                                         |
+| ------------- | ----------------------- | ----------------------------------------------- |
+| `Owner`       | `Simon`                 | Identifies who is responsible for the resources |
+| `Environment` | `Portfolio`             | Identifies the environment                      |
+| `Project`     | `Azure-Cloud-Portfolio` | Identifies the project                          |
 
-The following resource groups have been created for the portfolio environment:
+**What I learned:** Tags help organize Azure resources, identify ownership and support cost tracking and reporting.
 
-| Resource Group | Purpose                                                                          |
-| -------------- | -------------------------------------------------------------------------------- |
-| `rg-network`   | Networking resources such as the virtual network and network security components |
-| `rg-compute`   | Compute resources such as the portfolio virtual machine                          |
-| `rg-security`  | Security resources such as Azure Key Vault                                       |
+## 3. Access Management with Azure RBAC
 
-Resource groups are used to logically organize resources that share a common purpose or lifecycle.
+I created an Entra ID security group named `Compute-ReadOnly` and added my user account to it.
 
-This separation makes the environment easier to manage and provides a clear foundation for applying access control and security policies.
+I assigned the Reader role to this group at the `rg-compute` scope.
 
-## Naming Conventions
+My own account also has the Owner role at the subscription scope.
 
-A consistent naming convention is used across the Azure environment to make resources easier to identify and manage.
+**What I learned:** Azure Role-Based Access Control (RBAC) allows me to control who can access resources and what actions they can perform. Assigning permissions at the resource group level helps limit access to the resources that users need.
 
-Examples from this project include:
+## 4. Resource Lock
 
-| Resource type          | Naming pattern   | Example           |
-| ---------------------- | ---------------- | ----------------- |
-| Resource Group         | `rg-<purpose>`   | `rg-network`      |
-| Virtual Network        | `vnet-<purpose>` | `vnet-portfolio`  |
-| Subnet                 | `snet-<purpose>` | `snet-web`        |
-| Network Security Group | `nsg-<purpose>`  | `nsg-web`         |
-| Virtual Machine        | `vm-<purpose>`   | `vm-portfolio`    |
-| Key Vault              | `kv-<purpose>`   | `kv-portfolio-xx` |
+I created a resource lock named `lock-protect-compute` on `rg-compute`.
 
-The naming convention provides a quick indication of what a resource is used for and helps maintain consistency as the environment grows.
+The lock type is `CanNotDelete`, which helps prevent the resource group from being accidentally deleted.
 
-## Resource Tags
+**What I learned:** Resource locks provide an additional layer of protection against accidental changes or deletion. They do not replace access permissions, and they can affect authorized users as well.
 
-Tags are used to add metadata to Azure resources and resource groups.
+## Project Status
 
-The following tags are used in this portfolio project:
+The three resource groups have been created and tagged. Basic access management has been configured using an Entra ID security group and Azure RBAC. A resource lock has also been added to help protect the compute resource group.
 
-| Tag           | Value                   | Purpose                                           |
-| ------------- | ----------------------- | ------------------------------------------------- |
-| `Environment` | `Portfolio`             | Identifies the environment                        |
-| `Project`     | `Azure-Cloud-Portfolio` | Identifies resources belonging to this project    |
-| `Owner`       | `Simon`                 | Identifies the person responsible for the project |
-
-Tags help with resource identification, organization and cost management.
-
-In a larger production environment, tags can also be used to support cost allocation, reporting and governance.
-
-## Governance & Access Control
-
-Azure role-based access control (RBAC) is used to manage who can access resources and what actions they can perform.
-
-A security group named `Compute-ReadOnly` was created in Microsoft Entra ID and assigned the **Reader** role at the `rg-compute` scope.
-
-```text
-Simon
-  │
-  └── Member of Compute-ReadOnly
-              │
-              └── Reader
-                    │
-                    └── rg-compute
-```
-
-This provides read-only access to the compute resource group through group-based access control.
-
-The configuration follows the principle of least privilege by assigning only the permissions required for the intended task.
-
-## Resource Lock
-
-A resource lock was applied to the `rg-compute` resource group to protect its resources from accidental deletion.
-
-The lock is configured with the **CanNotDelete** level.
-
-```text
-rg-compute
-│
-├── vm-portfolio
-│
-└── 🔒 lock-protect-compute
-        CanNotDelete
-```
-
-The lock allows resources to be modified normally but prevents them from being deleted.
-
-This provides an additional layer of protection against accidental deletion, including deletion attempts made by users with high-level Azure permissions.
-
-## Status
-
-✅ Completed
-
+These steps provide a foundation for organizing and managing my Azure environment as I continue building my cloud portfolio.
