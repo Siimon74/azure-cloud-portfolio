@@ -1,98 +1,48 @@
 # 03 - Azure Security
 
-This section documents the security controls implemented in my Azure Cloud Portfolio environment.
+This is the security part of my Azure Cloud Portfolio project.
 
-## Objectives
+My goal is to learn how to control access to Azure resources, protect secrets and understand the basic security tools available in Azure.
 
-* Manage access using Microsoft Entra ID and Azure RBAC
-* Apply the principle of least privilege
-* Secure application secrets with Azure Key Vault
-* Use Managed Identity to avoid storing credentials in scripts
-* Configure security notifications with Microsoft Defender for Cloud
-* Identify additional security improvements and monitoring requirements
+## 1. Identity and Access
 
-## Identity and Access Management
+* Created an Entra ID security group named `Compute-ReadOnly`.
+* Assigned the Reader role to the group on `rg-compute`.
+* Created a resource lock on `rg-compute` to help prevent accidental changes or deletion.
 
-### Microsoft Entra ID and Azure RBAC
+**What I learned:** Azure RBAC lets me control who can access resources and what they can do. Assigning permissions at the resource group level also helps limit access to the resources that a user needs.
 
-* Created an Entra ID security group named `Compute-ReadOnly`
-* Added the relevant user account to the group
-* Assigned the **Reader** role at the `rg-compute` resource group scope
-* Kept administrative permissions separate from read-only access
+## 2. Key Vault and Managed Identity
 
-This demonstrates how access can be granted according to job responsibilities and limited to the required scope.
+* Created an Azure Key Vault and stored a test secret.
+* Enabled soft-delete protection.
+* Configured Azure RBAC for Key Vault permissions.
+* Enabled Managed Identity on my virtual machine.
+* Used Azure CLI from the VM to access the test secret without storing Azure credentials in a script.
 
-### Resource Protection
+**What I learned:** Key Vault stores secrets, while Managed Identity allows an Azure resource to authenticate without having to manage credentials manually.
 
-* Created a resource lock named `lock-protect-compute` on `rg-compute`
-* Used the lock to help protect resources against accidental deletion or modification, according to the lock type and Azure operation
+## 3. Microsoft Defender for Cloud
 
-## Azure Key Vault and Managed Identity
+* Explored Microsoft Defender for Cloud.
+* Checked the Microsoft Cloud Security Benchmark security policy.
+* Configured email notifications for high-severity security alerts and attack paths.
+* Reviewed the security recommendations for my subscription.
 
-### Key Vault Configuration
+Some recommendations are still marked as `Not evaluated`, so I cannot confirm that all security checks have been completed.
 
-* Created an Azure Key Vault to store a test secret
-* Enabled soft-delete protection
-* Configured Azure RBAC as the Key Vault permission model
+**What I learned:** Defender for Cloud helps identify security improvements, but some features require paid plans. I chose not to enable paid plans just for this learning project.
 
-### Managed Identity
+## 4. Improvements to Make
 
-* Enabled a Managed Identity on the `vm-portfolio` virtual machine
-* Granted the identity the required permissions to access the Key Vault secret
-* Used Azure CLI from the virtual machine to authenticate through Managed Identity
-* Successfully retrieved the test secret without storing Azure credentials in the VM's scripts
+* Enable Key Vault diagnostic logs and connect them to Log Analytics.
+* Review the network security settings of Key Vault.
+* Check virtual machine disk encryption and update settings.
+* Explore backup options and their costs.
+* Review the remaining Defender for Cloud recommendations.
 
-This demonstrates passwordless authentication between an Azure resource and Key Vault using Microsoft Entra ID and Azure RBAC.
+## Project Status
 
-**Security note:** Secret values and credentials are not included in this repository.
+The basic access controls, Key Vault setup, Managed Identity test and Defender for Cloud notification settings are in place.
 
-## Microsoft Defender for Cloud
-
-### Security Posture
-
-* Reviewed Microsoft Defender for Cloud for the Azure subscription
-* Confirmed that the Microsoft Cloud Security Benchmark security policy is enabled
-* Reviewed security recommendations and identified areas requiring further evaluation
-
-### Security Notifications
-
-* Configured email recipients for security notifications
-* Configured notifications for high-severity security alerts
-* Configured the notification threshold for attack paths
-
-These settings help ensure that important security alerts can reach the configured recipients.
-
-**Note:** Some Defender for Cloud recommendations remain marked as `Not evaluated`. This does not confirm that the associated resources are compliant or secure.
-
-## Improvements Identified
-
-The following improvements have been identified and remain planned or require further verification:
-
-* Configure Key Vault diagnostic logs and connect them to Azure Monitor / Log Analytics
-* Review Key Vault network access restrictions and private endpoint options
-* Review virtual machine disk encryption and host encryption settings
-* Review operating system update management
-* Review backup requirements and associated costs
-* Review Defender for Cloud recommendations and available free security features
-
-Paid Defender plans and additional resources will only be enabled when justified by the learning objectives and budget.
-
-## Cost Management
-
-* Avoided enabling paid Defender plans that are not required for this portfolio stage
-* Considered the potential costs of log ingestion, storage, backups and additional security services before implementation
-
-## Key Learnings
-
-* Azure RBAC controls who can access resources and what actions they can perform
-* Managed Identity allows Azure resources to authenticate without embedding credentials in code
-* Azure Key Vault centralizes secret storage and access control
-* Security notifications help improve incident awareness
-* Defender for Cloud recommendations require evaluation; an unevaluated recommendation is not proof of compliance
-* Security improvements must be balanced with operational requirements and cost management
-
-## Status
-
-**Implemented:** Identity and access controls, Key Vault secret access through Managed Identity, resource protection, and Defender for Cloud email notification settings.
-
-**Further work planned:** Key Vault diagnostic logging, additional security configuration reviews, and monitoring integration.
+I will continue improving the security and monitoring of this environment as I learn more about Azure.
