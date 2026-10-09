@@ -1,6 +1,6 @@
 # 03 - Azure Security
 
-This section documents the security controls implemented in the Azure Cloud Portfolio environment.
+This section documents the security controls implemented in the Azure Cloud Portfolio environment. 
 
 ## Objectives
 
