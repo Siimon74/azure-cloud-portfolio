@@ -1,86 +1,79 @@
 # 02 - Azure Infrastructure
 
-This section documents the infrastructure deployed in Azure.
+In this part of my Azure Cloud Portfolio, I built a basic network and deployed a Linux virtual machine.
 
-## Objectives
+The goal was to understand how Azure networking works, how to control network access and how to connect securely to a virtual machine.
 
-* Design an Azure Virtual Network
-* Create and configure subnets
-* Configure Network Security Groups
-* Deploy compute resources
-* Understand Azure networking fundamentals
+## 1. Virtual Network and Subnets
 
-## Network Architecture
+I created a Virtual Network (VNet) named `vnet-portfolio` to provide the network for my Azure resources.
 
-The Azure network was designed using a Virtual Network (VNet) with dedicated subnets for different purposes.
+The address space is `10.0.0.0/16`.
+
+The `snet-web` subnet uses `10.0.1.0/24` and contains my portfolio virtual machine.
+
+### Network layout
 
 ```text
 VNet: vnet-portfolio
-│
-├── snet-web
-│   └── Portfolio VM
-│
-└── snet-management
-    └── Reserved for management resources
+└── snet-web
+    └── vm-portfolio
 ```
 
-The VNet uses the `10.0.0.0/16` address space.
+I planned to use separate subnets for different purposes as the project grows.
 
-The `snet-web` subnet uses `10.0.1.0/24` and hosts the portfolio virtual machine.
+**What I learned:** A VNet provides a private network for Azure resources. Subnets divide that network into smaller sections, which can help organize resources and apply different security rules.
 
-The `snet-management` subnet uses `10.0.2.0/24` and is reserved for future management resources.
+## 2. Network Security Group (NSG)
 
-Separating workloads into subnets provides a foundation for applying different network security rules as the infrastructure grows.
+I created a Network Security Group named `nsg-web` to control inbound traffic to my infrastructure.
 
-## Network Security Group
-
-A Network Security Group (NSG) was configured to control inbound network traffic to the portfolio infrastructure.
-
-The NSG `nsg-web` contains the following inbound rules:
+The inbound rules are:
 
 | Priority | Rule                  | Protocol | Port | Source       | Action |
-| -------- | --------------------- | -------- | ---- | ------------ | ------ |
-| 100      | `Allow-HTTPS-Inbound` | TCP      | 443  | Any          | Allow  |
-| 110      | `Allow-SSH-Inbound`   | TCP      | 22   | My public IP | Allow  |
-| 65500    | `DenyAllInBound`      | Any      | Any  | Any          | Deny   |
+| -------: | --------------------- | -------- | ---: | ------------ | ------ |
+|      100 | `Allow-HTTPS-Inbound` | TCP      |  443 | Any          | Allow  |
+|      110 | `Allow-SSH-Inbound`   | TCP      |   22 | My public IP | Allow  |
+|    65500 | `DenyAllInBound`      | Any      |  Any | Any          | Deny   |
 
-Lower priority numbers are evaluated first. Therefore, the specific allow rules are evaluated before the default deny rule.
+Azure evaluates rules in priority order, starting with the lowest number. The specific allow rules are therefore evaluated before the default deny rule.
 
-SSH access is restricted to the administrator's public IP address rather than being exposed to the entire Internet.
+SSH access is restricted to my public IP instead of being open to everyone on the Internet.
 
-## Virtual Machine
+**What I learned:** An NSG acts like a network traffic filter. It allows or blocks traffic according to rules such as source, destination, protocol and port.
 
-A Linux virtual machine was deployed in Azure to provide the compute layer of the portfolio environment.
+## 3. Virtual Machine
+
+I deployed a Linux virtual machine named `vm-portfolio`.
 
 | Setting          | Configuration           |
 | ---------------- | ----------------------- |
-| Name             | `vm-portfolio`          |
-| Operating System | Ubuntu Server 24.04 LTS |
+| Operating system | Ubuntu Server 24.04 LTS |
 | Size             | Standard_B1s            |
 | Region           | Denmark East            |
-| Virtual Network  | `vnet-portfolio`        |
+| Virtual network  | `vnet-portfolio`        |
 | Subnet           | `snet-web`              |
 | Authentication   | SSH key                 |
 | Managed Identity | System-assigned         |
 
-The virtual machine is connected to the `snet-web` subnet and is protected by the configured Network Security Group.
+I chose a small VM size to keep the project costs low while learning the basics of Linux and Azure compute.
 
-SSH key authentication is used instead of password authentication to provide secure administrative access.
+I also enabled a system-assigned Managed Identity so the VM could authenticate with supported Azure services without storing credentials on the server.
 
-A system-assigned managed identity was also enabled on the VM. This identity is used to authenticate the virtual machine with Azure services without storing credentials on the server.
+**What I learned:** A virtual machine provides compute resources in Azure. Its size affects available resources and cost, while its network settings control how it communicates with other resources.
 
-## SSH Access
+## 4. Connecting Through SSH
 
-Administrative access to the Linux virtual machine is provided through SSH using public key authentication.
+I connected to the VM using SSH and public key authentication instead of a password.
 
-The SSH connection is restricted at the network level by the `Allow-SSH-Inbound` NSG rule, which only permits connections from the administrator's public IP address.
+The NSG rule for port 22 restricts SSH access to my public IP address.
 
-This configuration reduces the exposure of the SSH service while allowing secure remote administration of the virtual machine.
+During testing, I lost SSH connectivity after my public IP address changed. Updating the NSG rule with my current IP restored the connection.
 
-During testing, an SSH connection issue was caused by a change in the administrator's public IP address. Updating the NSG rule to the current public IP restored connectivity.
+**What I learned:** When SSH fails, the problem may not be the VM itself. I need to check the connection details, public IP address, network interface and NSG rules.
 
-This troubleshooting exercise demonstrated the relationship between the VM, its network interface, the NSG and the administrator's public IP address.
+## Project Status
 
-## Status
+**Completed:** Virtual network setup, subnet configuration, NSG rules, Linux VM deployment and SSH access.
 
-✅ Completed
+The project will be extended as I learn more about Azure networking and security.
